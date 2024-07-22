@@ -5,7 +5,7 @@ coverage==4.2
 dnspython==1.16.0
 ecdsa==0.15
 email-validator==1.1.1
-Flask==0.11.1
+Flask==1.0
 Flask-Bcrypt==0.7.1
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
