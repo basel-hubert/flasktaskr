@@ -29,15 +29,18 @@ class UsersTests(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
             os.path.join(basedir, TEST_DB)
         self.app = app.test_client()
+        self.app_context = app.app_context()
+        self.app_context.push()
         db.create_all()
 
-        self.assertEquals(app.debug, False)
+        self.assertEqual(app.debug, False)
 
 
     # executed after each test
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
 
     ########################

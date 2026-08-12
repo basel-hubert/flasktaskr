@@ -29,15 +29,18 @@ class APITests(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
             os.path.join(basedir, TEST_DB)
         self.app = app.test_client()
+        self.app_context = app.app_context()
+        self.app_context.push()
         db.create_all()
 
-        self.assertEquals(app.debug, False)
+        self.assertEqual(app.debug, False)
 
 
     # executed after each test
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
 
     ########################
@@ -79,8 +82,8 @@ class APITests(unittest.TestCase):
     def test_collection_endpoint_returns_correct_data(self):
         self.add_tasks()
         response = self.app.get('api/v1/tasks/', follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.mimetype, 'application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
         self.assertIn(b'Run around in circles', response.data)
         self.assertIn(b'Purchase Real Python', response.data)
 
@@ -88,8 +91,8 @@ class APITests(unittest.TestCase):
     def test_resource_endpoint_returns_correct_data(self):
         self.add_tasks()
         response = self.app.get('api/v1/tasks/2', follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.mimetype, 'application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
         self.assertIn(b'Purchase Real Python', response.data)
         self.assertNotIn(b'Run around in circles', response.data)
 
@@ -97,8 +100,8 @@ class APITests(unittest.TestCase):
     def test_invalid_response_endpoint_returns_error(self):
         self.add_tasks()
         response = self.app.get('api/v1/tasks/209', follow_redirects=True)
-        self.assertEquals(response.status_code, 404)
-        self.assertEquals(response.mimetype, 'application/json')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.mimetype, 'application/json')
         self.assertIn(b'Element does not exist', response.data)
 
 
