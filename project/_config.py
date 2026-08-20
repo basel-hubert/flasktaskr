@@ -12,7 +12,8 @@ DEBUG = True
 # define the full path for the database
 DATABASE_PATH = os.path.join(basedir, DATABASE)
 
-# the database uri
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
+# the database uri (can be overridden via the DATABASE_URL env var, e.g. for tests)
+SQLALCHEMY_DATABASE_URI = os.environ.get(
+    'DATABASE_URL', 'sqlite:///' + DATABASE_PATH)
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True

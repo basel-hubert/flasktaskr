@@ -4,12 +4,15 @@
 import os
 import unittest
 
-from project import app, db, bcrypt
-from project._config import basedir
-from project.models import Task, User
-
-
 TEST_DB = 'test.db'
+basedir = os.path.abspath(
+	os.path.join(os.path.dirname(__file__), '..', 'project'))
+os.environ.setdefault('SECRET_KEY', 'test-secret-key')
+os.environ.setdefault(
+	'DATABASE_URL', 'sqlite:///' + os.path.join(basedir, TEST_DB))
+
+from project import app, db, bcrypt
+from project.models import Task, User
 
 
 
@@ -26,18 +29,19 @@ class TaskTests(unittest.TestCase):
 		app.config['TESTING'] = True
 		app.config['WTF_CSRF_ENABLED'] = False
 		app.config['DEBUG'] = False
-		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
-			os.path.join(basedir, TEST_DB)
 		self.app = app.test_client()
+		self.app_context = app.app_context()
+		self.app_context.push()
 		db.create_all()
 
-		self.assertEquals(app.debug, False)
+		self.assertEqual(app.debug, False)
 
 
 	# executed after each test
 	def tearDown(self):
 		db.session.remove()
 		db.drop_all()
+		self.app_context.pop()
 
 
 	########################
