@@ -1,12 +1,15 @@
 from invoke import task
-from invocations.console import confirm
+
+
+def confirm(question):
+	return input("{} [y/N] ".format(question)).strip().lower() in ("y", "yes")
 
 
 # push
 
 @task
 def test(c):
-	result = c.run("nosetests -v", warn=True)
+	result = c.run("pytest -v", warn=True)
 	if result.failed and not confirm("Tests failed. Continue?"):
 		print("Aborted at user request.")
 
@@ -39,7 +42,7 @@ def heroku(c):
 
 @task
 def heroku_test(c):
-	c.run("heroku run nosetests -v")
+	c.run("heroku run pytest -v")
 
 @task
 def deploy(c):
